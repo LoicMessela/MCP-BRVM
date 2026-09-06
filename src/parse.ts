@@ -152,7 +152,7 @@ export function isIssuerDetailPage(html: string): boolean {
 function labeledField(text: string, labels: string[]): string | null {
   for (const label of labels) {
     const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const match = text.match(new RegExp(`${escaped}\\s*[:：]\\s*(.+)`, "i"));
+    const match = text.match(new RegExp(`${escaped}\\s*(?:\\([^)]*\\))?\\s*[:：]\\s*(.+)`, "i"));
     const value = match?.[1]?.split("\n")[0]?.replace(/\s+/g, " ").trim();
     if (value) return value;
   }
@@ -263,20 +263,38 @@ export function parseOhlcvCsv(csv: string): OhlcvBar[] {
   return bars;
 }
 
+const GENERIC_NAME_TOKENS = new Set([
+  "AFRICA",
+  "BANK",
+  "BENIN",
+  "BISSAU",
+  "BURKINA",
+  "COTE",
+  "DIVOIRE",
+  "FASO",
+  "GUINEE",
+  "INTERNATIONAL",
+  "IVOIRE",
+  "MALI",
+  "NIGER",
+  "SENEGAL",
+  "SOCIETE",
+  "TOGO",
+]);
+
 export function scoreIssuerMatch(ticker: string, quoteName: string, card: IssuerCard): number {
   const t = normalizeText(ticker);
   const title = normalizeText(card.name);
-  const slug = normalizeText(card.href);
+  const slug = normalizeText(card.href.replace(/[-/]/g, " "));
   const qn = normalizeText(quoteName);
   let score = 0;
-  if (title.split(" ").includes(t) || slug.split(" ").includes(t)) score += 100;
-  if (title.includes(t) || slug.includes(t.toLowerCase())) score += 40;
-  const quoteTokens = qn.split(" ").filter((tok) => tok.length >= 4);
-  const titleTokens = new Set(title.split(" "));
+  if (title.split(" ").includes(t) || slug.split(" ").includes(t)) score += 120;
+  const quoteTokens = qn.split(" ").filter((tok) => tok.length >= 4 && !GENERIC_NAME_TOKENS.has(tok));
+  const titleTokens = new Set(title.split(" ").filter((tok) => !GENERIC_NAME_TOKENS.has(tok)));
   const overlap = quoteTokens.filter((tok) => titleTokens.has(tok)).length;
-  score += overlap * 25;
+  score += overlap * 40;
+  if (quoteTokens.some((tok) => title.includes(tok) || slug.includes(tok))) score += 30;
   if (qn && title.includes(qn)) score += 60;
-  if (title && qn.includes(title)) score += 40;
   return score;
 }
 

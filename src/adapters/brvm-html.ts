@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 import {
+  BRVM_ISSUER_INDEX_PATHS,
   BRVM_ISSUERS_PATH,
   BRVM_ORIGIN,
   BRVM_QUOTES_PATH,
@@ -119,7 +120,7 @@ export async function getIssuer(ticker: string): Promise<IssuerResult> {
 
   const tried = new Set<string>();
   for (const { card, score } of ranked) {
-    if (score < 25) continue;
+    if (score < 50) continue;
     const url = absoluteUrl(card.href);
     if (tried.has(url)) continue;
     tried.add(url);
@@ -193,10 +194,10 @@ function pickIssuerCard(ticker: string, name: string, cards: IssuerCard[]): Issu
 async function loadIssuerDirectory(): Promise<IssuerCard[]> {
   const seen = new Set<string>();
   const cards: IssuerCard[] = [];
-  const queue = [`${BRVM_ORIGIN}${BRVM_ISSUERS_PATH}`];
+  const queue = BRVM_ISSUER_INDEX_PATHS.map((path) => `${BRVM_ORIGIN}${path}`);
   let pages = 0;
 
-  while (queue.length > 0 && pages < 8) {
+  while (queue.length > 0 && pages < 20) {
     const url = queue.shift()!;
     if (seen.has(url)) continue;
     seen.add(url);
@@ -207,7 +208,9 @@ async function loadIssuerDirectory(): Promise<IssuerCard[]> {
     for (const card of pageCards) {
       if (!cards.some((existing) => existing.href === card.href)) cards.push(card);
     }
-    if (cards.length === before && pages > 1) break;
+    // BRVM's Drupal pager often repeats the same 10 cards; keep walking seed
+    // country indexes instead of treating a duplicate page as end-of-directory.
+    if (cards.length === before) continue;
     for (const href of parseIssuerPager(html)) {
       const next = absoluteUrl(href);
       if (!seen.has(next)) queue.push(next);

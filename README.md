@@ -17,7 +17,7 @@ Contract notes (not invented features):
 
 - Official session quotes are **EOD / last published table**, not a guaranteed last-tick stream. The site often shows “Séance fermée” outside the Abidjan session.
 - Prices are **XOF (FCFA)**.
-- `get_issuer` follows `/fr/emetteurs/societes-cotees` listing cards, then the issuer node. BRVM’s Drupal pager is incomplete at times; live mode may return quote-derived fields plus a `notes[]` explanation when the profile page cannot be resolved.
+- `get_issuer` indexes `/fr/emetteurs/societes-cotees` **and** `/fr/pays-societes-cotees/{country}` cards, then fetches the issuer node. BRVM’s Drupal pager often repeats the same 10 issuers; country pages are the reliable live path. If no profile page matches, the tool returns quote-derived fields plus a `notes[]` explanation.
 - Fixture mode ships a representative snapshot (`SNTS` and a short equity tape) so tools stay callable when live HTML flakes.
 
 ## Terms of use / reproduction risk

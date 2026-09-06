@@ -11,6 +11,18 @@ export const BRVM_ORIGIN = "https://www.brvm.org";
 export const BRVM_QUOTES_PATH = "/fr/cours-actions/0";
 export const BRVM_ISSUERS_PATH = "/fr/emetteurs/societes-cotees";
 
+export const BRVM_ISSUER_INDEX_PATHS = [
+  BRVM_ISSUERS_PATH,
+  "/fr/pays-societes-cotees/benin",
+  "/fr/pays-societes-cotees/burkina-faso",
+  "/fr/pays-societes-cotees/cote-divoire",
+  "/fr/pays-societes-cotees/guinee-bissau",
+  "/fr/pays-societes-cotees/mali",
+  "/fr/pays-societes-cotees/niger",
+  "/fr/pays-societes-cotees/senegal",
+  "/fr/pays-societes-cotees/togo",
+] as const;
+
 export const OHLCV_BASE =
   "https://raw.githubusercontent.com/Fredysessie/brvm-data-public/main/data";
 
