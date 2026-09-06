@@ -1,0 +1,46 @@
+{
+  "name": "mcp-brvm",
+  "version": "0.1.0",
+  "description": "Research-only MCP server for BRVM market data (quotes, issuer profiles, OHLCV). No trading.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-brvm": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "fixtures",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:http": "node dist/index.js --http",
+    "smoke": "BRVM_DATA_MODE=fixture node dist/smoke.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "brvm",
+    "market-data",
+    "research"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/express": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "cheerio": "^1.1.2",
+    "express": "^5.1.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3"
+  }
+}
